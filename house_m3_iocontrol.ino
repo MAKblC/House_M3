@@ -1,5 +1,6 @@
 #include <iocontrol.h>
 #include <WiFi.h>
+
 // Wi-Fi
 const char* ssid = "XXXXXXXXX";
 const char* password = "XXXXXXXX";
@@ -7,6 +8,7 @@ const char* password = "XXXXXXXX";
 // Название панели на сайте iocontrol.ru
 const char* myPanelName = "XXXXXXXXX";
 int status;
+
 // Название переменных как на сайте iocontrol.ru
 const char* VarName_sensors = "sensors";
 const char* VarName_Wind = "Wind";
@@ -17,6 +19,7 @@ const char* VarName_gates = "gates";
 const char* VarName_button = "button";
 const char* VarName_buzzer = "buzzer";
 const char* VarName_lcd = "lcd";
+
 // Создаём объект клиента
 WiFiClient client;
 // Создаём объект iocontrol, передавая название панели и клиента
@@ -39,15 +42,15 @@ Servo gates;
 
 #define WHITE_LED 17
 #define WIND 16
-#define BUTTON 19  // пин для подключения
-int buttonState;   // переменная для хранения состояния кнопки
+#define BUTTON 19  
+int buttonState;   
 
 #include <Wire.h>
 
 #include <Adafruit_MCP4725.h>
 Adafruit_MCP4725 buzzer;
 int vol1 = 1000;
-int vol2 = 100;  // разница значений = громкость
+int vol2 = 100; 
 int ton;
 
 #include <I2C_graphical_LCD_display.h>
@@ -103,12 +106,12 @@ void setup() {
   }
   mySensor.initAirQuality();
 
-  buzzer.begin(0x60);           // С перемычкой адрес будет 0x60
-  buzzer.setVoltage(0, false);  // выключение звука
+  buzzer.begin(0x60);          
+  buzzer.setVoltage(0, false); 
 
   setBusChannel(0x04);
   lcd.begin();
-  lcd.gotoxy(10, 50);  // координата курсора
+  lcd.gotoxy(10, 50); 
   lcd.string("Privet, MGBOT!", false);
 
   setBusChannel(0x04);
@@ -124,11 +127,9 @@ void setup() {
 
   lox.init();
   lox.setTimeout(500);
-  // параметры для режима высокой точности
   lox.setMeasurementTimingBudget(200000);
 
   Fire.begin();
-
 
   if (!mpu.begin(0x69)) {
     Serial.println("Failed to find MPU6050 chip");
@@ -159,17 +160,17 @@ void loop()  // вызываем функцию обработки сообще�
   if (status == OK) {
     // Выводим текст в последовательный порт
     Serial.println("------- Read OK -------");
-    // Записываем считанный из сервиса значения в переменные
-    digitalWrite(WIND, mypanel.readInt(VarName_Wind));
-    digitalWrite(WHITE_LED, mypanel.readInt(VarName_LED));
-    int io_buzzer = mypanel.readInt(VarName_buzzer);
+    // Записываем считанные из сервиса значения в переменные
+    digitalWrite(WIND, mypanel.readInt(VarName_Wind)); // состояние вентилятора
+    digitalWrite(WHITE_LED, mypanel.readInt(VarName_LED)); // состояние светодиодной ленты
+    int io_buzzer = mypanel.readInt(VarName_buzzer); // состояние генератора звука
     if (io_buzzer == 1) {
       buzzer.setVoltage(0, false);  // выключение звука
       note(3, 450);
       note(5, 150);
       note(6, 450);  // пример нескольких нот
     }
-    int io_rgb = mypanel.readInt(VarName_rgb);
+    int io_rgb = mypanel.readInt(VarName_rgb); // состояние адресной ленты
     if (io_rgb == 1) {
       for (int i = 0; i < NUM_LEDS; i++) {
         leds[i].setHue(i * 255 / NUM_LEDS);
@@ -179,31 +180,32 @@ void loop()  // вызываем функцию обработки сообще�
       FastLED.clear();
       FastLED.show();
     }
-    int io_window = mypanel.readInt(VarName_window);
+    int io_window = mypanel.readInt(VarName_window); // состояние окна
     if (io_window == 1) {
       window.write(OPENED_WINDOW);
     } else {
       window.write(CLOSED_WINDOW);
     }
-    int io_gates = mypanel.readInt(VarName_gates);
+    int io_gates = mypanel.readInt(VarName_gates); // состояние ворот
     if (io_gates == 1) {
       gates.write(OPENED_GATES);
     } else {
       gates.write(CLOSED_GATES);
     }
 
-    String myString = mypanel.readString(VarName_lcd);
+    String myString = mypanel.readString(VarName_lcd); // дублирование фразы на дисплей
     setBusChannel(0x04);
-    lcd.clear();
-    char charBuf[20];
-    myString.toCharArray(charBuf, 20);
-    lcd.string(charBuf, false);
+    lcd.clear(); // очистить экран
+    char charBuf[20]; // создать буффер
+    myString.toCharArray(charBuf, 20); // поместить в буффер переменную
+    lcd.string(charBuf, false); // отправить на дисплей
   }
+  
   // ************************ ЗАПИСЬ ************************
   // Отправляем переменные из контроллера в сервис
   buttonState = digitalRead(BUTTON);  // проверяем состояние кнопки
-  mypanel.write(VarName_button, !buttonState);
-
+  mypanel.write(VarName_button, !buttonState); // дублируем состояние кнопки на панель
+  // считывание датчиков
   setBusChannel(0x04);
   float lux = lightMeter.readLightLevel();
   float t = bme280.readTemperature();
@@ -218,6 +220,7 @@ void loop()  // вызываем функцию обработки сообще�
   float adc1 = mcp3021.readADC();
   float wl = map(adc1, air_value, water_value, moisture_0, moisture_100);
   mySensor.measureAirQuality();
+  // поочередно сменяем надпись на панели, выводя каждый датчик
   String sensorValue;
   switch (count) {
     case 1:
@@ -253,14 +256,12 @@ void loop()  // вызываем функцию обработки сообще�
     case 11:
       sensorValue = "TVOC_" + String(mySensor.TVOC);
       break;
-    case 12:
+    case 12: // сброс заново
       count = 0;
       break;
   }
-  count++;
-  Serial.println("CO2: " + String(mySensor.CO2) + " ppm");
-  Serial.println("TVOC: " + String(mySensor.TVOC) + " ppb");
-  mypanel.write(VarName_sensors, sensorValue);
+  count++; // счетчик номера датчика для показа
+  mypanel.write(VarName_sensors, sensorValue); // отправка значения на панель
   status = mypanel.writeUpdate();
   // Если статус равен константе OK...
   if (status == OK) {
