@@ -1,10 +1,12 @@
 /*
 Не забудьте поправить настройки и адреса устройств в зависмости от комплектации!  
 */
+
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <UniversalTelegramBot.h>
 
+// впишите свои значения!
 #define WIFI_SSID "XXXXXXX"
 #define WIFI_PASSWORD "XXXXXXXXXXX"
 // токен вашего бота
@@ -16,6 +18,7 @@ String test_photo_url = "https://mgbot.ru/upload/logo-r.png";
 // отобразить кнопки перехода на сайт с помощью InlineKeyboard
 String keyboardJson1 = "[[{ \"text\" : \"Ваш сайт\", \"url\" : \"https://mgbot.ru\" }],[{ \"text\" : \"Перейти на сайт IoTik.ru\", \"url\" : \"https://www.iotik.ru\" }]]";
 
+// настройки для телеграма
 WiFiClientSecure secured_client;
 UniversalTelegramBot bot(BOT_TOKEN, secured_client);
 unsigned long bot_lasttime;
@@ -39,14 +42,14 @@ Servo gates;
 #define WHITE_LED 17
 #define WIND 16
 #define BUTTON 19  // пин для подключения
-int buttonState;   // переменная для хранения состояния кнопки
+int buttonState;  
 
 #include <Wire.h>
 
 #include <Adafruit_MCP4725.h>
 Adafruit_MCP4725 buzzer;
 int vol1 = 1000;
-int vol2 = 100;  // разница значений = громкость
+int vol2 = 100;  
 int ton;
 
 #include <I2C_graphical_LCD_display.h>
@@ -93,6 +96,7 @@ void setup() {
   pinMode(WIND, OUTPUT);
   pinMode(BUTTON, INPUT);
 
+  // запуск подключения к телеграму
   Serial.print("Connecting to Wifi SSID ");
   Serial.print(WIFI_SSID);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -111,12 +115,12 @@ void setup() {
   }
   mySensor.initAirQuality();
 
-  buzzer.begin(0x60);           // С перемычкой адрес будет 0x60
-  buzzer.setVoltage(0, false);  // выключение звука
+  buzzer.begin(0x60);           
+  buzzer.setVoltage(0, false);  
 
   setBusChannel(0x04);
   lcd.begin();
-  lcd.gotoxy(10, 50);  // координата курсора
+  lcd.gotoxy(10, 50);  
   lcd.string("Privet, MGBOT!", false);
 
   setBusChannel(0x04);
@@ -132,11 +136,9 @@ void setup() {
 
   lox.init();
   lox.setTimeout(500);
-  // параметры для режима высокой точности
   lox.setMeasurementTimingBudget(200000);
 
   Fire.begin();
-
 
   if (!mpu.begin(0x69)) {
     Serial.println("Failed to find MPU6050 chip");
@@ -149,6 +151,7 @@ void setup() {
   mcp3021.begin(ADDR);
 }
 
+// функция обработки нового сообщения
 void handleNewMessages(int numNewMessages) {
   Serial.print("handleNewMessages ");
   Serial.println(numNewMessages);
@@ -160,9 +163,8 @@ void handleNewMessages(int numNewMessages) {
     String from_name = bot.messages[i].from_name;
     if (from_name == "")
       from_name = "Guest";
-
     // выполняем действия в зависимости от пришедшей команды
-    if (text == "/sensors")  // измеряем данные
+    if (text == "/sensors")  // отправить значения с датчиков
     {
       setBusChannel(0x04);
       float lux = lightMeter.readLightLevel();
@@ -199,7 +201,7 @@ void handleNewMessages(int numNewMessages) {
     if (text == "/photo") {  // пост фотографии
       bot.sendPhoto(chat_id, test_photo_url, "а вот и фотка!");
     }
-    if (text == "/windon") {
+    if (text == "/windon") { 
       digitalWrite(WIND, HIGH);
       bot.sendMessage(chat_id, "Вентилятор включен", "");
     }
@@ -233,16 +235,17 @@ void handleNewMessages(int numNewMessages) {
       window.write(CLOSED_WINDOW);
       bot.sendMessage(chat_id, "Окно закрыто", "");
     }
-    if (text == "/sound") {
+    if (text == "/sound") { // включить звук
       note(14, 400);
       note(2, 100);
       buzzer.setVoltage(0, false);  // выключение звука
     }
-    if (text == "/randomrgb") {
+    if (text == "/randomrgb") { // включить случайный цвет на адресной ленте
       fill_solid(leds, NUM_LEDS, CRGB(random(0, 255), random(0, 255), random(0, 255)));
       FastLED.show();
       bot.sendMessage(chat_id, "Случайный цвет включен", "");
     }
+    
     if ((text == "/start") || (text == "start") || (text == "/help") || (text == "help"))  // команда для вызова помощи
     {
       bot.sendMessage(chat_id, "Привет, " + from_name + "!", "");
@@ -254,12 +257,13 @@ void handleNewMessages(int numNewMessages) {
       sms += "/help - вызвать помощь\n";
       bot.sendMessage(chat_id, sms, "Markdown");
     }
+    
     if (text == "/site")  // отобразить кнопки в диалоге для перехода на сайт
     {
       bot.sendMessageWithInlineKeyboard(chat_id, "Выберите действие", "", keyboardJson1);
     }
 
-    if (text == "/options")  // клавиатура для управления теплицей
+    if (text == "/options")  // клавиатура для управления домом
     {
       String keyboardJson = "[[\"/lighton\", \"/lightoff\"],[\"/randomrgb\",\"/sensors\"],[\"/sound\",\"/windon\", \"/windoff\"],[\"/gateon\",\"/gateoff\",\"/windowon\",\"/windowoff\"]]";
       bot.sendMessageWithReplyKeyboard(chat_id, "Выберите команду", "", keyboardJson, true);
