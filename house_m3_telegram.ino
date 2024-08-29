@@ -5,10 +5,10 @@
 #include <WiFiClientSecure.h>
 #include <UniversalTelegramBot.h>
 
-#define WIFI_SSID "MGBot"
-#define WIFI_PASSWORD "Terminator812"
+#define WIFI_SSID "XXXXXXX"
+#define WIFI_PASSWORD "XXXXXXXXXXX"
 // токен вашего бота
-#define BOT_TOKEN "6373693891:AAG41EIiBxLpRTPJLOcrWxQIAV-6oe0qjNI"
+#define BOT_TOKEN "6373XXXXXXXXX:XXXXXXXXXXXXXXXXXXXXXXXXX0qjNI"
 
 // ссылка для поста фотографии
 String test_photo_url = "https://mgbot.ru/upload/logo-r.png";
