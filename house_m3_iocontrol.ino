@@ -1,11 +1,11 @@
 #include <iocontrol.h>
 #include <WiFi.h>
 // Wi-Fi
-const char* ssid = "MGBot";
-const char* password = "Terminator812";
+const char* ssid = "XXXXXXXXX";
+const char* password = "XXXXXXXX";
 
 // Название панели на сайте iocontrol.ru
-const char* myPanelName = "MGBot";
+const char* myPanelName = "XXXXXXXXX";
 int status;
 // Название переменных как на сайте iocontrol.ru
 const char* VarName_sensors = "sensors";
