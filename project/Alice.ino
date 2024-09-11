@@ -42,13 +42,13 @@ int water_max = 20; // порог срабатывания датчика про
 
 ////////////////////// Настройки //////////////////////
 // Wi-Fi
-const char* ssid = "MGBot";
-const char* password = "Terminator812";
+const char* ssid = "XXXXX";
+const char* password = "XXXXXXXXX";
 
-const char* mqtt_server = "m8.wqtt.ru";  // адрес
-int mqtt_port = 16976;                   // порт
-const char* mqtt_login = "u_FP4I6G";     // пользователь
-const char* mqtt_pass = "jp7VZyhz";      // пароль
+const char* mqtt_server = "XXXX.wqtt.ru";  // адрес
+int mqtt_port = XXXXXX;                   // порт
+const char* mqtt_login = "XXXXXXX";     // пользователь
+const char* mqtt_pass = "XXXXXXXXX";      // пароль
 
 WiFiClient espClient;
 PubSubClient client(espClient);
