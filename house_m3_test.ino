@@ -10,6 +10,7 @@ CRGB leds[NUM_LEDS];
 #include <ESP32_Servo.h>
 Servo window;
 Servo gates;
+// в файлах проекта показано, как настроить углы
 #define OPENED_GATES 70 // угол для открытых ворот
 #define CLOSED_GATES 30 // угол для закрытых ворот
 #define OPENED_WINDOW 30 // угол для открытого окна
