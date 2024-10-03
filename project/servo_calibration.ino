@@ -1,3 +1,7 @@
+/*
+1. откройте монитор порта
+2. справа выберите режим "No Line Ending"
+*/
 #include <ESP32_Servo.h>
 Servo window;
 Servo gates;
